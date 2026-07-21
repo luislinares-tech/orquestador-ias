@@ -1,36 +1,85 @@
-# Orquestador de IAs · Modo Ciencia · Fase 2
+# Orquestador Científico de IA · Fase 3
 
-## Incluye
+Aplicación Streamlit para trabajo científico con cuatro proveedores opcionales:
+
+- **Gemini**: búsqueda fundamentada, PDFs, enlaces, YouTube y metodología.
+- **DeepSeek**: código R, Python, estadística y depuración.
+- **Kimi**: contexto largo, síntesis y segunda lectura.
+- **OpenAI**: auditoría crítica e integración opcional.
+
+## Funciones principales
 
 - Seis perfiles científicos especializados.
-- Gemini mediante el SDK oficial `google-genai`.
-- Fallback entre `gemini-3.1-flash-lite` y `gemini-3.5-flash`.
-- Entrada por texto, PDFs, URLs públicas, PDFs por URL y videos públicos de YouTube.
-- Tareas específicas para protocolos PRISMA-P, revisión sistemática, scoping review,
-  bibliometría, metodología, asesoría, estadística/R, edición y revisión por pares.
-- Exportación en Markdown y TXT.
+- Interfaz profesional con modo claro, oscuro y sistema.
+- Importación múltiple de claves en un solo bloque.
+- Claves de sesión, `.env` local y `st.secrets` opcional.
+- Enrutamiento automático.
+- Flujo **Código R auditado**: DeepSeek genera y Gemini revisa.
+- Flujo **Evidencia estricta**: Gemini usa Google Search/URL Context y la app verifica DOI/PMID.
+- Verificación en Crossref, OpenAlex y PubMed/NCBI.
+- Comparación de dos IAs.
+- Modo de máxima calidad.
+- PDF, enlaces públicos y YouTube.
+- Exportación Markdown y JSON de trazabilidad.
 
-## Actualizar desde la Fase 1
-
-No crees otra carpeta ni otro entorno virtual. Detén Streamlit con `Ctrl + C`, reemplaza
-`app.py` y vuelve a ejecutar:
-
-```powershell
-.\.venv\Scripts\python.exe -m streamlit run .\app.py
-```
-
-Las dependencias son las mismas que en la Fase 1. Si una función nueva produjera un error
-por una versión antigua del SDK, actualiza una sola vez:
+## Instalación local
 
 ```powershell
-.\.venv\Scripts\python.exe -m pip install --upgrade "google-genai>=1.0,<2.0" "streamlit>=1.41,<2.0"
+python -m venv .venv
+.\.venv\Scripts\python.exe -m pip install -r requirements.txt
+.\.venv\Scripts\python.exe -m streamlit run app.py
 ```
 
-## Seguridad
+## Importar varias claves en la interfaz
 
-No compartas claves API. La clave de sesión se mantiene temporalmente en memoria. Para uso
-local persistente, copia `.env.example` como `.env` y coloca allí una clave nueva.
+Pega en **Conexiones → Importar varias claves de una vez**:
 
-## Fase 3
+```text
+GEMINI_API_KEY=...
+DEEPSEEK_API_KEY=...
+MOONSHOT_API_KEY=...
+OPENAI_API_KEY=...
+```
 
-DeepSeek será el motor principal para código R y Gemini funcionará como respaldo y revisor.
+La aplicación reconoce los nombres, ordena las claves por proveedor y las conserva únicamente durante la sesión.
+
+## Persistencia segura
+
+### Uso local
+
+Copia `.env.example` como `.env`. `.env` ya está excluido por `.gitignore`.
+
+### Streamlit Community Cloud
+
+Usa **App settings → Secrets**. Nunca subas `secrets.toml` a GitHub.
+
+Para una aplicación pública se recomienda:
+
+```toml
+ALLOW_SHARED_SECRETS = false
+```
+
+Con esa configuración, cada usuario debe ingresar sus propias claves. Si activas claves compartidas, cualquier visitante podría consumir la cuota del propietario.
+
+## Actualización desde Fase 2
+
+Reemplaza en el mismo repositorio:
+
+- `app.py`
+- `requirements.txt`
+- `README.md`
+- `.env.example`
+- `.gitignore`
+- `.streamlit/config.toml`
+
+Streamlit Community Cloud detectará los cambios en GitHub y reconstruirá la app porque cambió `requirements.txt`.
+
+## Verificación de referencias
+
+La aplicación distingue:
+
+- existencia bibliográfica, verificada por DOI/PMID;
+- fuente web recuperada;
+- indexación y calidad de revista.
+
+La presencia de un DOI no demuestra que una revista esté indexada en Scopus o Web of Science ni cuál sea su SJR. Esos indicadores deben comprobarse por separado en los portales oficiales.
